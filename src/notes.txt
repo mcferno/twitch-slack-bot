@@ -1,0 +1,4 @@
+
+
+    Each client ID is granted a total of 30 queries per minute (if a Bearer token is not provided) or 120 queries per minute (if a Bearer token is provided), across all new Twitch API queries. If this limit is exceeded, an error is returned: HTTP 429 (Too Many Requests).
+
