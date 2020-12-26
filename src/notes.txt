@@ -1,4 +1,23 @@
-
+Rate Limiting
 
     Each client ID is granted a total of 30 queries per minute (if a Bearer token is not provided) or 120 queries per minute (if a Bearer token is provided), across all new Twitch API queries. If this limit is exceeded, an error is returned: HTTP 429 (Too Many Requests).
 
+Response Examples
+
+    Online Stream
+        [id] => 41070255022
+        [user_id] => 62134739
+        [user_name] => FaZeBlaze
+        [game_id] => 512710
+        [game_name] => Call of Duty: Warzone
+        [type] => live
+        [title] => MERRY CHRISTMAS :) @FaZeBlaze
+        [viewer_count] => 4546
+        [started_at] => 2020-12-25T02:56:32Z
+        [language] => en
+        [thumbnail_url] => https://static-cdn.jtvnw.net/previews-ttv/live_user_fazeblaze-{width}x{height}.jpg
+        [tag_ids] => Array
+            (
+                [0] => 6ea6bca4-4712-4ab9-a906-e3336a9d8039
+                [1] => fd8f5e68-42d3-4544-a273-5fc92dabc568
+            )

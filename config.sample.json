@@ -1,0 +1,8 @@
+{
+    "twitchClientId": "",
+    "twitchClientSecret": "",
+    "token": "TWITCH-BEARER-TOKEN",
+    "streamers": [
+        "username"
+    ]
+}
