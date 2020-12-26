@@ -8,7 +8,8 @@ $requiredConfigKeys = [
     "twitchClientId",
     "twitchClientSecret",
     "token",
-    "streamers"
+	"streamers",
+	"slackWebhookUrl"
 ];
 
 if (empty($config)) {
@@ -20,6 +21,11 @@ if (empty($config)) {
 if (count(array_intersect_key(array_flip($requiredConfigKeys), $config)) !== count($requiredConfigKeys)) {
     echo "Config must contain: " . implode(" | ", $requiredConfigKeys) . "\nExiting..";
     exit(2);
+}
+
+if (empty($config["streamers"])) {
+    echo "Not configured to pull any streamers. Exiting..";
+    exit(0);
 }
 
 $clientId = $config["twitchClientId"];
@@ -34,6 +40,9 @@ $streamsRequest = $newTwitchApi->getStreamsApi()->getStreams($token, [], $config
 $streamList = json_decode($streamsRequest->getBody()->getContents());
 
 if (!empty($streamList) && !empty($streamList->data)) {
+
+	$client = new GuzzleHttp\Client();
+
     foreach ($streamList->data as $onlineStream) {
         print_r($onlineStream);
 
@@ -55,7 +64,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			"block_id": "section567",
 			"text": {
 				"type": "mrkdwn",
-				"text": "{$onlineStream->title}\n<{$userStreamUrl}|{$userStreamUrl}>"
+				"text": "{$onlineStream->title}\\n<{$userStreamUrl}|{$userStreamUrl}>"
 			},
 			"accessory": {
 				"type": "image",
@@ -67,8 +76,12 @@ if (!empty($streamList) && !empty($streamList->data)) {
 }
 REQUEST;
 
-        $template = json_decode($jsonRequest);
+		$slackPostResponse = $client->request('POST', $config["slackWebhookUrl"], [
+			'json' => json_decode($jsonRequest)
+		]);
 
-        print_r($jsonRequest);
+		if ($slackPostResponse->getStatusCode() !== 200) {
+			echo "Failing to annouce for stream {$onlineStream->user_name}\n";
+		}
     }
 }

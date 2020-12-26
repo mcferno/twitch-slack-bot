@@ -1,8 +1,7 @@
 {
     "twitchClientId": "",
     "twitchClientSecret": "",
-    "token": "TWITCH-BEARER-TOKEN",
-    "streamers": [
-        "username"
-    ]
+	"token": "TWITCH-BEARER-TOKEN",
+	"slackWebhookUrl": "https://hooks.slack.com/services/",
+	"streamers": []
 }
