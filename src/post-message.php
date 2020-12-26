@@ -51,6 +51,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 
         $jsonRequest = <<<REQUEST
 {
+	"text": "{$onlineStream->user_name} started streaming {$onlineStream->game_name}",
 	"blocks": [
 		{
 			"type": "section",
