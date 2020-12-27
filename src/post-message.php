@@ -1,10 +1,6 @@
 <?php
-$root = dirname(__DIR__);
-include("$root/vendor/autoload.php");
 use Utils\Logger;
-
-$config = json_decode(file_get_contents("$root/config.json"), true);
-date_default_timezone_set(!empty($config["timezone"]) ? $config["timezone"] : "UTC");
+include(dirname(__DIR__) . "/src/bootstrap.php");
 
 $requiredConfigKeys = [
     "twitchClientId",
@@ -14,31 +10,26 @@ $requiredConfigKeys = [
 	"slackWebhookUrl"
 ];
 
-if (empty($config)) {
-    Logger::write("Config file not found.\nExiting...");
-    exit(1);
-}
-
 // are we missing any configs?
-if (count(array_intersect_key(array_flip($requiredConfigKeys), $config)) !== count($requiredConfigKeys)) {
+if (!$config->hasKeys($requiredConfigKeys)) {
     Logger::write("Config must contain: " . implode(" | ", $requiredConfigKeys) . "\nExiting..");
     exit(2);
 }
 
-if (empty($config["streamers"])) {
+if (empty($config->get("streamers"))) {
     Logger::write("Not configured to pull any streamers. Exiting..");
     exit(0);
 }
 
-$clientId = $config["twitchClientId"];
-$clientSecret = $config["twitchClientSecret"];
-$token = $config["token"];
+$clientId = $config->get("twitchClientId");
+$clientSecret = $config->get("twitchClientSecret");
+$token = $config->get("token");
 
 // build API clients
 $helixGuzzleClient = new NewTwitchApi\HelixGuzzleClient($clientId);
 $newTwitchApi = new NewTwitchApi\NewTwitchApi($helixGuzzleClient, $clientId, $clientSecret);
 
-$streamsRequest = $newTwitchApi->getStreamsApi()->getStreams($token, [], $config["streamers"]);
+$streamsRequest = $newTwitchApi->getStreamsApi()->getStreams($token, [], $config->get("streamers"));
 $streamList = json_decode($streamsRequest->getBody()->getContents());
 
 if (!empty($streamList) && !empty($streamList->data)) {
@@ -91,7 +82,7 @@ REQUEST;
 				continue;
 			}
 
-			$slackPostResponse = $client->request('POST', $config["slackWebhookUrl"], [
+			$slackPostResponse = $client->request('POST', $config->get("slackWebhookUrl"), [
 				'json' => $jsonRequestObj
 			]);
 
