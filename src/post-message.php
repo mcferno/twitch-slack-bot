@@ -4,6 +4,7 @@ include("$root/vendor/autoload.php");
 use Utils\Logger;
 
 $config = json_decode(file_get_contents("$root/config.json"), true);
+date_default_timezone_set(!empty($config["timezone"]) ? $config["timezone"] : "UTC");
 
 $requiredConfigKeys = [
     "twitchClientId",

@@ -1,6 +1,7 @@
 {
-    "twitchClientId": "",
-    "twitchClientSecret": "",
+	"timezone": "America/Toronto",
+	"twitchClientId": "",
+	"twitchClientSecret": "",
 	"token": "TWITCH-BEARER-TOKEN",
 	"slackWebhookUrl": "https://hooks.slack.com/services/",
 	"streamers": []
