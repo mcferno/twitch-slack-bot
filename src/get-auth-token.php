@@ -10,13 +10,13 @@ $requiredConfigKeys = [
 ];
 
 if (empty($config)) {
-    echo "Config file not found.\nExiting...";
+    echo "Config file not found.\nExiting..\n";
     exit(1);
 }
 
 // are we missing any configs?
 if (count(array_intersect_key(array_flip($requiredConfigKeys), $config)) !== count($requiredConfigKeys)) {
-    echo "Config must contain: " . implode(" | ", $requiredConfigKeys) . "\nExiting..";
+    echo "Config must contain: " . implode(" | ", $requiredConfigKeys) . "\nExiting..\n";
     exit(2);
 }
 
@@ -27,13 +27,19 @@ $tokenRequest = new NewTwitchApi\Auth\OauthApi(
 );
 $tokenResponse = $tokenRequest->getAppAccessToken();
 if ($tokenResponse->getStatusCode() !== 200) {
-    echo "Cant get new Bearer token from Twitch app auth";
+    echo "Cant get new Bearer token from Twitch app auth\n";
     echo $tokenResponse->getReasonPhrase();
     exit(3);
 }
 
 $tokenResponseBody = json_decode($tokenResponse->getBody()->getContents());
 echo $tokenResponseBody->access_token;
+
+$keystore = new Client\PersistentStore();
+if ($keystore->setTwitchAuthToken($tokenResponseBody->access_token)) {
+	echo "Successfully stored the new auth token.\n";
+}
+
 echo "\n";
 echo $tokenResponseBody->expires_in;
 echo "\n";
