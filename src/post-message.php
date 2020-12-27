@@ -1,6 +1,7 @@
 <?php
 $root = dirname(__DIR__);
 include("$root/vendor/autoload.php");
+use Utils\Logger;
 
 $config = json_decode(file_get_contents("$root/config.json"), true);
 
@@ -13,18 +14,18 @@ $requiredConfigKeys = [
 ];
 
 if (empty($config)) {
-    echo "Config file not found.\nExiting...";
+    Logger::write("Config file not found.\nExiting...");
     exit(1);
 }
 
 // are we missing any configs?
 if (count(array_intersect_key(array_flip($requiredConfigKeys), $config)) !== count($requiredConfigKeys)) {
-    echo "Config must contain: " . implode(" | ", $requiredConfigKeys) . "\nExiting..";
+    Logger::write("Config must contain: " . implode(" | ", $requiredConfigKeys) . "\nExiting..");
     exit(2);
 }
 
 if (empty($config["streamers"])) {
-    echo "Not configured to pull any streamers. Exiting..";
+    Logger::write("Not configured to pull any streamers. Exiting..");
     exit(0);
 }
 
@@ -48,7 +49,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 		$existingStream = $keystore->getActiveTwitchStream($onlineStream->user_id);
 
 		if ($existingStream === false) {
-			echo "Announcing {$onlineStream->user_name} to Slack.. \n";
+			Logger::write("Announcing {$onlineStream->user_name} to Slack..");
 			$userStreamUrl = "https://twitch.tv/{$onlineStream->user_name}";
 			$imageUrl = str_replace(["{width}", "{height}"], ["1280", "720"], $onlineStream->thumbnail_url);
 
@@ -85,16 +86,16 @@ REQUEST;
 			]);
 
 			if ($slackPostResponse->getStatusCode() !== 200) {
-				echo "Failing to annouce for stream {$onlineStream->user_name}\n";
+				Logger::write("Failing to annouce for stream {$onlineStream->user_name}");
 			}
 		}
 
 		// remember this streamer so we don't annouce twice
 		$result = $keystore->setActiveTwitchStream($onlineStream->user_id, $onlineStream);
 		if ($result !== true) {
-			echo "Could not save {$onlineStream->user_id} state to Redis.\n";
+			Logger::write("Could not save {$onlineStream->user_id} state to Redis.");
 		}
     }
 }
 
-echo "Exiting normally.\n";
+Logger::write("Exiting normally.");
