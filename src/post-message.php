@@ -42,14 +42,17 @@ $streamList = json_decode($streamsRequest->getBody()->getContents());
 if (!empty($streamList) && !empty($streamList->data)) {
 
 	$client = new GuzzleHttp\Client();
+	$keystore = new Client\PersistentStore();
 
     foreach ($streamList->data as $onlineStream) {
-        print_r($onlineStream);
+		$existingStream = $keystore->getActiveTwitchStream($onlineStream->user_id);
 
-        $userStreamUrl = "https://twitch.tv/{$onlineStream->user_name}";
-        $imageUrl = str_replace(["{width}", "{height}"], ["1280", "720"], $onlineStream->thumbnail_url);
+		if ($existingStream === false) {
+			echo "Announcing {$onlineStream->user_name} to Slack.. \n";
+			$userStreamUrl = "https://twitch.tv/{$onlineStream->user_name}";
+			$imageUrl = str_replace(["{width}", "{height}"], ["1280", "720"], $onlineStream->thumbnail_url);
 
-        $jsonRequest = <<<REQUEST
+			$jsonRequest = <<<REQUEST
 {
 	"text": "{$onlineStream->user_name} started streaming {$onlineStream->game_name}",
 	"blocks": [
@@ -77,12 +80,21 @@ if (!empty($streamList) && !empty($streamList->data)) {
 }
 REQUEST;
 
-		$slackPostResponse = $client->request('POST', $config["slackWebhookUrl"], [
-			'json' => json_decode($jsonRequest)
-		]);
+			$slackPostResponse = $client->request('POST', $config["slackWebhookUrl"], [
+				'json' => json_decode($jsonRequest)
+			]);
 
-		if ($slackPostResponse->getStatusCode() !== 200) {
-			echo "Failing to annouce for stream {$onlineStream->user_name}\n";
+			if ($slackPostResponse->getStatusCode() !== 200) {
+				echo "Failing to annouce for stream {$onlineStream->user_name}\n";
+			}
+		}
+
+		// remember this streamer so we don't annouce twice
+		$result = $keystore->setActiveTwitchStream($onlineStream->user_id, $onlineStream);
+		if ($result !== true) {
+			echo "Could not save {$onlineStream->user_id} state to Redis.\n";
 		}
     }
 }
+
+echo "Exiting normally.\n";
