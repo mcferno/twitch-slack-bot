@@ -1,46 +1,37 @@
 <?php
-$root = dirname(__DIR__);
-include("$root/vendor/autoload.php");
-
-$config = json_decode(file_get_contents("$root/config.json"), true);
+use Utils\Logger;
+include(dirname(__DIR__) . "/src/bootstrap.php");
 
 $requiredConfigKeys = [
     "twitchClientId",
     "twitchClientSecret"
 ];
 
-if (empty($config)) {
-    echo "Config file not found.\nExiting..\n";
-    exit(1);
-}
-
 // are we missing any configs?
-if (count(array_intersect_key(array_flip($requiredConfigKeys), $config)) !== count($requiredConfigKeys)) {
-    echo "Config must contain: " . implode(" | ", $requiredConfigKeys) . "\nExiting..\n";
+if (!$config->hasKeys($requiredConfigKeys)) {
+    Logger::write("Config must contain: " . implode(" | ", $requiredConfigKeys) . "\nExiting..");
     exit(2);
 }
 
 $tokenRequest = new NewTwitchApi\Auth\OauthApi(
-    $config["twitchClientId"],
-    $config["twitchClientSecret"],
-    new Client\TwitchAuthClient($config["twitchClientId"])
+    $config->get("twitchClientId"),
+    $config->get("twitchClientSecret"),
+    new Client\TwitchAuthClient($config->get("twitchClientId"))
 );
+
 $tokenResponse = $tokenRequest->getAppAccessToken();
 if ($tokenResponse->getStatusCode() !== 200) {
-    echo "Cant get new Bearer token from Twitch app auth\n";
-    echo $tokenResponse->getReasonPhrase();
+    Logger::write("Cant get new Bearer token from Twitch app auth");
+    Logger::write($tokenResponse->getReasonPhrase());
     exit(3);
 }
 
 $tokenResponseBody = json_decode($tokenResponse->getBody()->getContents());
-echo $tokenResponseBody->access_token;
+Logger::write($tokenResponseBody->access_token);
 
 $keystore = new Client\PersistentStore();
 if ($keystore->setTwitchAuthToken($tokenResponseBody->access_token)) {
-	echo "Successfully stored the new auth token.\n";
+	Logger::write("Successfully stored the new auth token.");
 }
 
-echo "\n";
-echo $tokenResponseBody->expires_in;
-echo "\n";
-echo date("Y-m-d H:i:s", strtotime("now + {$tokenResponseBody->expires_in} seconds"));
+Logger::write("Expiry estimate: " . date("Y-m-d H:i:s", strtotime("now + {$tokenResponseBody->expires_in} seconds")));
