@@ -52,6 +52,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			Logger::write("Announcing {$onlineStream->user_name} to Slack..");
 			$userStreamUrl = "https://twitch.tv/{$onlineStream->user_name}";
 			$imageUrl = str_replace(["{width}", "{height}"], ["1280", "720"], $onlineStream->thumbnail_url);
+			$title = str_replace(['"'], ["'"], $onlineStream->title);
 
 			$jsonRequest = <<<REQUEST
 {
@@ -69,7 +70,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			"block_id": "section567",
 			"text": {
 				"type": "mrkdwn",
-				"text": "{$onlineStream->title}\\n<{$userStreamUrl}|{$userStreamUrl}>"
+				"text": "{$title}\\n<{$userStreamUrl}|{$userStreamUrl}>"
 			},
 			"accessory": {
 				"type": "image",
@@ -81,12 +82,20 @@ if (!empty($streamList) && !empty($streamList->data)) {
 }
 REQUEST;
 
+			$jsonRequestObj = json_decode($jsonRequest);
+
+			if (empty($jsonRequestObj)) {
+				Logger::write("Failed to build a valid JSON message for Slack for {$onlineStream->user_name}. Skipping ..");
+				print_r($onlineStream);
+				continue;
+			}
+
 			$slackPostResponse = $client->request('POST', $config["slackWebhookUrl"], [
-				'json' => json_decode($jsonRequest)
+				'json' => $jsonRequestObj
 			]);
 
 			if ($slackPostResponse->getStatusCode() !== 200) {
-				Logger::write("Failing to annouce for stream {$onlineStream->user_name}");
+				Logger::write("Failed to annouce for stream {$onlineStream->user_name}");
 			}
 		}
 
