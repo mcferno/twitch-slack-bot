@@ -24,6 +24,7 @@ if (empty($config->get("streamers"))) {
 $clientId = $config->get("twitchClientId");
 $clientSecret = $config->get("twitchClientSecret");
 $token = $config->get("token");
+$debug = $config->get("debug", false);
 
 // build API clients
 $helixGuzzleClient = new NewTwitchApi\HelixGuzzleClient($clientId);
@@ -41,20 +42,25 @@ if (!empty($streamList) && !empty($streamList->data)) {
 		$existingStream = $keystore->getActiveTwitchStream($onlineStream->user_id);
 
 		if ($existingStream === false) {
+			if ($debug) {
+				print_r($onlineStream);
+			}
 			Logger::write("Announcing {$onlineStream->user_name} to Slack..");
 			$userStreamUrl = "https://twitch.tv/{$onlineStream->user_name}";
 			$imageUrl = str_replace(["{width}", "{height}"], ["1280", "720"], $onlineStream->thumbnail_url);
 			$title = str_replace(['"'], ["'"], $onlineStream->title);
+			$gameLabel = !empty($onlineStream->game_name) ? " *{$onlineStream->game_name}*." : "";
+			$gameLabelPlain = !empty($onlineStream->game_name) ? " {$onlineStream->game_name}" : "";
 
 			$jsonRequest = <<<REQUEST
 {
-	"text": "{$onlineStream->user_name} started streaming {$onlineStream->game_name}",
+	"text": "{$onlineStream->user_name} started streaming{$gameLabelPlain}",
 	"blocks": [
 		{
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "<{$userStreamUrl}|*{$onlineStream->user_name}*> started streaming :crosshair: *{$onlineStream->game_name}*."
+				"text": "<{$userStreamUrl}|*{$onlineStream->user_name}*> started streaming :crosshair:{$gameLabel}"
 			}
 		},
 		{
@@ -67,7 +73,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			"accessory": {
 				"type": "image",
 				"image_url": "{$imageUrl}",
-				"alt_text": "Stream gameplay"
+				"alt_text": "Gameplay screenshot"
 			}
 		}
 	]
@@ -93,8 +99,12 @@ REQUEST;
 		// stream is already running, see if we need to announce a game change
 		} else if(!empty($existingStream->game_id)
 			&& !empty($onlineStream->game_id)
-			&& $existingStream->game_id !== $onlineStream->game_id) {
+			&& $existingStream->game_id !== $onlineStream->game_id
+			&& !empty($onlineStream->game_name)) {
 
+			if ($debug) {
+				print_r($onlineStream);
+			}
 			Logger::write("Announcing {$onlineStream->user_name} game change to Slack..");
 			$userStreamUrl = "https://twitch.tv/{$onlineStream->user_name}";
 			$jsonRequest = <<<REQUEST
