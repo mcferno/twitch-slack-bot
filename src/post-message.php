@@ -97,9 +97,8 @@ REQUEST;
 			}
 
 		// stream is already running, see if we need to announce a game change
-		} else if(!empty($existingStream->game_id)
-			&& !empty($onlineStream->game_id)
-			&& $existingStream->game_id !== $onlineStream->game_id
+		} else if(!empty($onlineStream->game_id)
+			&& $existingStream->game_id != $onlineStream->game_id
 			&& !empty($onlineStream->game_name)) {
 
 			if ($debug) {
@@ -147,4 +146,4 @@ REQUEST;
     }
 }
 
-Logger::write("Exiting normally.");
+// Logger::write("Exiting normally.");
