@@ -38,22 +38,6 @@ if (empty($userListResponse) || empty($userListResponse->data)) {
 }
 
 $keystore = new Client\PersistentStore();
-
-/*
-(
-	[id] => 81687332
-	[login] => cloakzy
-	[display_name] => cloakzy
-	[type] =>
-	[broadcaster_type] => partner
-	[description] => Battle Royale Pro Player.
-	[profile_image_url] => https://static-cdn.jtvnw.net/jtv_user_pictures/320226c6-f422-4baf-8ed2-1be7eb3757e6-profile_image-300x300.png
-	[offline_image_url] => https://static-cdn.jtvnw.net/jtv_user_pictures/05c63a18-e600-4809-b3f1-91ad0cca4e04-channel_offline_image-1920x1080.jpeg
-	[view_count] => 43529865
-	[created_at] => 2015-02-03T07:50:36.963613Z
-)
-*/
-
 $updatedUsers = [];
 foreach ($userListResponse->data as $userProfile) {
 	if (empty($userProfile->login)) {
@@ -62,7 +46,7 @@ foreach ($userListResponse->data as $userProfile) {
 		continue;
 	}
 
-	$keystore->setUserProfile($userProfile->login, $userProfile);
+	$keystore->setUserProfile($userProfile->id, $userProfile);
 	$updatedUsers[] = $userProfile->login;
 }
 

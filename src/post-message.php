@@ -52,7 +52,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			$gameLabel = !empty($onlineStream->game_name) ? " *{$onlineStream->game_name}*." : "";
 			$gameLabelPlain = !empty($onlineStream->game_name) ? " {$onlineStream->game_name}" : "";
 
-			$userProfile = $keystore->getUserProfile($onlineStream->user_name);
+			$userProfile = $keystore->getUserProfile($onlineStream->user_id);
 			$profileImage = !empty($userProfile) && !empty($userProfile->profile_image_url)
 				? $userProfile->profile_image_url
 				: $imageUrl;
@@ -73,7 +73,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			"block_id": "section567",
 			"text": {
 				"type": "mrkdwn",
-				"text": "{$title}\\n<{$userStreamUrl}|{$userStreamUrl}>"
+				"text": "><{$userStreamUrl}|*{$onlineStream->user_name}*> {$title}\\n><{$userStreamUrl}|{$userStreamUrl}>"
 			},
 			"accessory": {
 				"type": "image",
