@@ -46,19 +46,19 @@ class PersistentStore
 		return self::USER_STREAM_KEY . $userId;
 	}
 
-	public function getUserProfile($username) {
-		$obj = $this->redis->get($this->getUserProfileKey($username));
+	public function getUserProfile($userId) {
+		$obj = $this->redis->get($this->getUserProfileKey($userId));
 		if (!empty($obj)) {
 			return json_decode($obj);
 		}
 		return $obj;
 	}
 
-	public function setUserProfile($username, $payload) {
-		return $this->redis->setEx($this->getUserProfileKey($username), self::USER_PROFILE_TTL, json_encode($payload));
+	public function setUserProfile($userId, $payload) {
+		return $this->redis->setEx($this->getUserProfileKey($userId), self::USER_PROFILE_TTL, json_encode($payload));
 	}
 
-	protected function getUserProfileKey($username) {
-		return self::USER_PROFILE_KEY . $username;
+	protected function getUserProfileKey($userId) {
+		return self::USER_PROFILE_KEY . $userId;
 	}
 }
