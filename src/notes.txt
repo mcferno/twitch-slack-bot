@@ -22,3 +22,16 @@ Response Examples
                 [0] => 6ea6bca4-4712-4ab9-a906-e3336a9d8039
                 [1] => fd8f5e68-42d3-4544-a273-5fc92dabc568
             )
+
+	User Profile
+
+		[id] => 81687332
+		[login] => cloakzy
+		[display_name] => cloakzy
+		[type] =>
+		[broadcaster_type] => partner
+		[description] => Battle Royale Pro Player.
+		[profile_image_url] => https://static-cdn.jtvnw.net/jtv_user_pictures/320226c6-f422-4baf-8ed2-1be7eb3757e6-profile_image-300x300.png
+		[offline_image_url] => https://static-cdn.jtvnw.net/jtv_user_pictures/05c63a18-e600-4809-b3f1-91ad0cca4e04-channel_offline_image-1920x1080.jpeg
+		[view_count] => 43529865
+		[created_at] => 2015-02-03T07:50:36.963613Z
