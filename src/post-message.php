@@ -52,6 +52,11 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			$gameLabel = !empty($onlineStream->game_name) ? " *{$onlineStream->game_name}*." : "";
 			$gameLabelPlain = !empty($onlineStream->game_name) ? " {$onlineStream->game_name}" : "";
 
+			$userProfile = $keystore->getUserProfile($onlineStream->user_name);
+			$profileImage = !empty($userProfile) && !empty($userProfile->profile_image_url)
+				? $userProfile->profile_image_url
+				: $imageUrl;
+
 			$jsonRequest = <<<REQUEST
 {
 	"text": "{$onlineStream->user_name} started streaming{$gameLabelPlain}",
@@ -72,8 +77,8 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			},
 			"accessory": {
 				"type": "image",
-				"image_url": "{$imageUrl}",
-				"alt_text": "Gameplay screenshot"
+				"image_url": "{$profileImage}",
+				"alt_text": "User profile photo"
 			}
 		}
 	]
