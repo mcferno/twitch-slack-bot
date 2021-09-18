@@ -13,7 +13,7 @@ include(APP_ROOT . "/vendor/autoload.php");
 
 // we require the existence of config.json to process
 if (!file_exists(APP_ROOT . "/config.json")) {
-	Logger::write("/config.json not found. Please create it from the config.sample.json file.");
+	\Utils\Logger::write("/config.json not found. Please create it from the config.sample.json file.");
 	exit(1);
 }
 

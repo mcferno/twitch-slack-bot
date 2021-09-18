@@ -1,5 +1,10 @@
 <?php
 use Utils\Logger;
+use Model\Streamer;
+
+/**
+ * @global $config \Utils\Config
+ */
 include(dirname(__DIR__) . "/src/bootstrap.php");
 
 $requiredConfigKeys = [
@@ -26,11 +31,13 @@ $clientSecret = $config->get("twitchClientSecret");
 $token = $config->get("token");
 $debug = $config->get("debug", false);
 
+$streamers = Streamer::factoryFromConfig($config->get("streamers"));
+
 // build API clients
 $helixGuzzleClient = new NewTwitchApi\HelixGuzzleClient($clientId);
 $newTwitchApi = new NewTwitchApi\NewTwitchApi($helixGuzzleClient, $clientId, $clientSecret);
 
-$streamsRequest = $newTwitchApi->getStreamsApi()->getStreams($token, [], $config->get("streamers"));
+$streamsRequest = $newTwitchApi->getStreamsApi()->getStreams($token, [], Streamer::getAllUserIds($streamers));
 $streamList = json_decode($streamsRequest->getBody()->getContents());
 
 if (!empty($streamList) && !empty($streamList->data)) {
@@ -40,13 +47,14 @@ if (!empty($streamList) && !empty($streamList->data)) {
 
     foreach ($streamList->data as $onlineStream) {
 		$existingStream = $keystore->getActiveTwitchStream($onlineStream->user_id);
+		/** @var Streamer $streamer */
+		$streamer = $streamers[$onlineStream->user_name];
 
 		if ($existingStream === false) {
 			if ($debug) {
 				print_r($onlineStream);
 			}
 			Logger::write("Announcing {$onlineStream->user_name} to Slack..");
-			$userStreamUrl = "https://twitch.tv/{$onlineStream->user_name}";
 			$imageUrl = str_replace(["{width}", "{height}"], ["1280", "720"], $onlineStream->thumbnail_url);
 			$title = str_replace(['"'], ["'"], $onlineStream->title);
 			$gameLabel = !empty($onlineStream->game_name) ? " *{$onlineStream->game_name}*." : "";
@@ -59,13 +67,13 @@ if (!empty($streamList) && !empty($streamList->data)) {
 
 			$jsonRequest = <<<REQUEST
 {
-	"text": "{$onlineStream->user_name} started streaming{$gameLabelPlain}",
+	"text": "{$streamer->getName()} started streaming{$gameLabelPlain}",
 	"blocks": [
 		{
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "<{$userStreamUrl}|*{$onlineStream->user_name}*> started streaming :crosshair:{$gameLabel}"
+				"text": "<{$streamer->getFeedUrl()}|*{$streamer->getName()}*> started streaming :crosshair:{$gameLabel}"
 			}
 		},
 		{
@@ -73,7 +81,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			"block_id": "section567",
 			"text": {
 				"type": "mrkdwn",
-				"text": "><{$userStreamUrl}|*{$onlineStream->user_name}*> {$title}\\n><{$userStreamUrl}|{$userStreamUrl}>"
+				"text": "><{$streamer->getFeedUrl()}|*{$onlineStream->user_name}*> {$title}\\n><{$streamer->getFeedUrl()}|{$streamer->getFeedUrl()}>"
 			},
 			"accessory": {
 				"type": "image",
@@ -98,7 +106,7 @@ REQUEST;
 			]);
 
 			if ($slackPostResponse->getStatusCode() !== 200) {
-				Logger::write("Failed to annouce go live for stream {$onlineStream->user_name}");
+				Logger::write("Failed to announce go live for stream {$onlineStream->user_name}");
 			}
 
 		// stream is already running, see if we need to announce a game change
@@ -110,16 +118,15 @@ REQUEST;
 				print_r($onlineStream);
 			}
 			Logger::write("Announcing {$onlineStream->user_name} game change to Slack..");
-			$userStreamUrl = "https://twitch.tv/{$onlineStream->user_name}";
 			$jsonRequest = <<<REQUEST
 {
-	"text": "{$onlineStream->user_name} launched {$onlineStream->game_name}",
+	"text": "{$streamer->getName()} launched {$onlineStream->game_name}",
 	"blocks": [
 		{
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "<{$userStreamUrl}|*{$onlineStream->user_name}*> launched :crosshair: *{$onlineStream->game_name}*."
+				"text": "<{$streamer->getFeedUrl()}|*{$streamer->getName()}*> launched :crosshair: *{$onlineStream->game_name}*."
 			}
 		}
 	]

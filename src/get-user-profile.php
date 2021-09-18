@@ -1,5 +1,6 @@
 <?php
 use Utils\Logger;
+use Model\Streamer;
 include(dirname(__DIR__) . "/src/bootstrap.php");
 
 $requiredConfigKeys = [
@@ -24,12 +25,13 @@ $clientId = $config->get("twitchClientId");
 $clientSecret = $config->get("twitchClientSecret");
 $token = $config->get("token");
 $debug = $config->get("debug", false);
+$streamers = Streamer::factoryFromConfig($config->get("streamers"));
 
 // build API clients
 $helixGuzzleClient = new NewTwitchApi\HelixGuzzleClient($clientId);
 $newTwitchApi = new NewTwitchApi\NewTwitchApi($helixGuzzleClient, $clientId, $clientSecret);
 
-$userListRequest = $newTwitchApi->getUsersApi()->getUsers($token, [], $config->get("streamers"));
+$userListRequest = $newTwitchApi->getUsersApi()->getUsers($token, [], Streamer::getAllUserIds($streamers));
 $userListResponse = json_decode($userListRequest->getBody()->getContents());
 
 if (empty($userListResponse) || empty($userListResponse->data)) {
