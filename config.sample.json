@@ -6,6 +6,6 @@
 	"slackWebhookUrl": "https://hooks.slack.com/services/",
 	"streamers": [
 		"TwitchHandle",
-		{"username": "TwitchHandle2", "name": "Nickname"}
+		{"username": "TwitchHandle2", "name": "Nickname", "slackUserId":  "U1234567890"}
 	]
 }

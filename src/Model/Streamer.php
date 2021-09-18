@@ -11,6 +11,8 @@ class Streamer
 	public $name;
 	/** @var string */
 	public $username;
+	/** @var string */
+	public $slackUserId;
 
 	public function __construct($config)
 	{
@@ -19,6 +21,9 @@ class Streamer
 		} elseif (is_array($config)) {
 			$this->username = $config['username'];
 			$this->name = !empty($config['name']) ? $config['name'] : $this->username;
+			if (!empty($config['slackUserId'])) {
+				$this->slackUserId = $config['slackUserId'];
+			}
 		}
 	}
 
@@ -34,6 +39,11 @@ class Streamer
 	public function getFeedUrl()
 	{
 		return "https://twitch.tv/{$this->username}";
+	}
+
+	public function hasSlackHandle()
+	{
+		return !empty($this->slackUserId);
 	}
 
 	/**

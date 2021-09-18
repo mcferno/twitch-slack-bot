@@ -1,5 +1,7 @@
 <?php
 use Utils\Logger;
+
+/** @global $config \Utils\Config */
 include(dirname(__DIR__) . "/src/bootstrap.php");
 
 $requiredConfigKeys = [

@@ -1,6 +1,8 @@
 <?php
 use Utils\Logger;
 use Model\Streamer;
+
+/** @global $config \Utils\Config */
 include(dirname(__DIR__) . "/src/bootstrap.php");
 
 $requiredConfigKeys = [

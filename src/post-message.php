@@ -2,9 +2,7 @@
 use Utils\Logger;
 use Model\Streamer;
 
-/**
- * @global $config \Utils\Config
- */
+/** @global $config \Utils\Config */
 include(dirname(__DIR__) . "/src/bootstrap.php");
 
 $requiredConfigKeys = [
@@ -65,6 +63,8 @@ if (!empty($streamList) && !empty($streamList->data)) {
 				? $userProfile->profile_image_url
 				: $imageUrl;
 
+			$leadInUserMention = !$streamer->hasSlackHandle() ? "<{$streamer->getFeedUrl()}|*{$streamer->getName()}*>" : "<@{$streamer->slackUserId}>";
+
 			$jsonRequest = <<<REQUEST
 {
 	"text": "{$streamer->getName()} started streaming{$gameLabelPlain}",
@@ -73,7 +73,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "<{$streamer->getFeedUrl()}|*{$streamer->getName()}*> started streaming :crosshair:{$gameLabel}"
+				"text": "{$leadInUserMention} started streaming :crosshair:{$gameLabel}"
 			}
 		},
 		{
