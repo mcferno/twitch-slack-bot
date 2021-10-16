@@ -46,7 +46,13 @@ if (!empty($streamList) && !empty($streamList->data)) {
     foreach ($streamList->data as $onlineStream) {
 		$existingStream = $keystore->getActiveTwitchStream($onlineStream->user_id);
 		/** @var Streamer $streamer */
-		$streamer = $streamers[$onlineStream->user_name];
+		$streamer = $streamers[$onlineStream->user_login];
+
+		if (empty($streamer)) {
+			Logger::write("Could not find the config-driven profile for {$onlineStream->user_name}. Skipping ..");
+			print_r($onlineStream);
+			continue;
+		}
 
 		if ($existingStream === false) {
 			if ($debug) {
