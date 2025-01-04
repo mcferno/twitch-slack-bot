@@ -62,11 +62,14 @@ Have a look at a [crontab generator](https://crontab-generator.org/) if you need
 Example, checks every 60 seconds, 24/7:
 
 ```bash
-# Notification script. Runs every 60 seconds, every day
-* * * * * /usr/bin/php -f ./twitch-slack-bot/src/post-message.php >> twitch-bot-notify-script.log
+# Fetch a Twitch API access token every day, storing it for use by the every-minute announcement bot (below)
+0 1 * * * /usr/bin/php -f ./twitch-slack-bot/src/src/get-auth-token.php >> twitch-bot-user-script.log
 
 # User profile script. Only need to run it once a day to get any profile image, name, or bio changes
 0 2 * * * /usr/bin/php -f ./twitch-slack-bot/src/get-user-profile.php >> twitch-bot-user-script.log
+
+# Notification script. Runs every 60 seconds, every day
+* * * * * /usr/bin/php -f ./twitch-slack-bot/src/post-message.php >> twitch-bot-notify-script.log
 ```
 
 Example: To run 9am to 9pm, Monday through Friday, use `* 9-21 * * 1-5`.

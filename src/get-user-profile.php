@@ -8,7 +8,6 @@ include(dirname(__DIR__) . "/src/bootstrap.php");
 $requiredConfigKeys = [
     "twitchClientId",
     "twitchClientSecret",
-    "token",
 	"streamers"
 ];
 
@@ -25,7 +24,14 @@ if (empty($config->get("streamers"))) {
 
 $clientId = $config->get("twitchClientId");
 $clientSecret = $config->get("twitchClientSecret");
-$token = $config->get("token");
+$keystore = new Client\PersistentStore();
+$token = $keystore->getTwitchAuthToken();
+
+if (empty($token)) {
+	Logger::write("Can't proceed with an empty Twitch access token, exiting");
+	exit(1);
+}
+
 $debug = $config->get("debug", false);
 $streamers = Streamer::factoryFromConfig($config->get("streamers"));
 
@@ -41,7 +47,6 @@ if (empty($userListResponse) || empty($userListResponse->data)) {
     exit(0);
 }
 
-$keystore = new Client\PersistentStore();
 $updatedUsers = [];
 foreach ($userListResponse->data as $userProfile) {
 	if (empty($userProfile->login)) {

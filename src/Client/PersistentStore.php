@@ -5,7 +5,8 @@ class PersistentStore
 	protected $redis;
 
 	const AUTH_TOKEN_KEY = "twitch_auth";
-	const AUTH_TOKEN_TTL = 7200; // 2 hours
+	/** How long to store a Twitch API access token */
+	const AUTH_TOKEN_TTL = 2 * 86400; // 48 hours
 
 	const USER_STREAM_KEY = "stream_by_userid_";
 	const USER_STREAM_TTL = 600; // 10 minutes
