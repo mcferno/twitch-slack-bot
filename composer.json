@@ -1,6 +1,6 @@
 {
     "require": {
-        "nicklaw5/twitch-api-php": "^3.3"
+        "nicklaw5/twitch-api-php": "^7.0"
     },
     "autoload": {
         "psr-4": { "": "src/" }

@@ -15,7 +15,7 @@ if (!$config->hasKeys($requiredConfigKeys)) {
     exit(2);
 }
 
-$tokenRequest = new NewTwitchApi\Auth\OauthApi(
+$tokenRequest = new TwitchApi\Auth\OauthApi(
     $config->get("twitchClientId"),
     $config->get("twitchClientSecret"),
     new Client\TwitchAuthClient($config->get("twitchClientId"))

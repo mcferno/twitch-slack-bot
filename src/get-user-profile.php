@@ -30,8 +30,8 @@ $debug = $config->get("debug", false);
 $streamers = Streamer::factoryFromConfig($config->get("streamers"));
 
 // build API clients
-$helixGuzzleClient = new NewTwitchApi\HelixGuzzleClient($clientId);
-$newTwitchApi = new NewTwitchApi\NewTwitchApi($helixGuzzleClient, $clientId, $clientSecret);
+$helixGuzzleClient = new TwitchApi\HelixGuzzleClient($clientId);
+$newTwitchApi = new TwitchApi\TwitchApi($helixGuzzleClient, $clientId, $clientSecret);
 
 $userListRequest = $newTwitchApi->getUsersApi()->getUsers($token, [], Streamer::getAllUserIds($streamers));
 $userListResponse = json_decode($userListRequest->getBody()->getContents());

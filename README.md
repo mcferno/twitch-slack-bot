@@ -4,7 +4,7 @@ This app monitors Twitch for streamers you want to subscribe to. When any of the
 
 ## Requirements
 
-1. PHP 7.2+, with [Composer](https://getcomposer.org/download/) installed
+1. PHP 7.4+, with [Composer](https://getcomposer.org/download/) installed
 2. Redis server instance
 3. Cronjob access
 
