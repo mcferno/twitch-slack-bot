@@ -68,7 +68,12 @@ if (!empty($streamList) && !empty($streamList->data)) {
 			}
 			Logger::write("Announcing {$onlineStream->user_name} to Slack..");
 
-			$jsonRequestObj = Template\NewStream::get($streamer, $keystore->getUserProfile($onlineStream->user_id), $onlineStream);
+			$profileRaw = $keystore->getUserProfile($onlineStream->user_id);
+			$jsonRequestObj = Template\NewStream::get(
+				$streamer,
+				new Twitch\OnlineStream($onlineStream),
+				!empty($profileRaw) ? new Twitch\UserProfile($profileRaw) : null
+			);
 
 			if (empty($jsonRequestObj)) {
 				Logger::write("Failed to build a valid JSON message for Slack for {$onlineStream->user_name}. Skipping ..");

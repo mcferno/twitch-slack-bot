@@ -9,10 +9,10 @@ class NewStream
 	static function get(
 		/** Configured account */
 		\Model\Streamer $streamer,
-		/** \Twitch\UserProfile Extended profile data */
-		\stdClass $userProfile,
-		/** \Twitch\OnlineStream Game launched */
-		\stdClass $onlineStream
+		/** Game launched */
+		\Twitch\OnlineStream $onlineStream,
+		/** Extended profile data */
+		\Twitch\UserProfile|null $userProfile
 	): object
 	{
 		$imageUrl = str_replace(["{width}", "{height}"], ["1280", "720"], $onlineStream->thumbnail_url);
