@@ -2,7 +2,7 @@
 use Utils\Logger;
 
 /** @global $config \Utils\Config */
-include(dirname(__DIR__) . "/src/bootstrap.php");
+include(dirname(dirname(__DIR__)) . "/src/bootstrap.php");
 
 $requiredConfigKeys = [
     "twitchClientId",
