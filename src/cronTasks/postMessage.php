@@ -100,22 +100,7 @@ if (!empty($streamList) && !empty($streamList->data)) {
 				print_r($onlineStream);
 			}
 			Logger::write("Announcing {$onlineStream->user_name} game change to Slack..");
-			$jsonRequest = <<<REQUEST
-{
-	"text": "{$streamer->getName()} launched {$onlineStream->game_name}",
-	"blocks": [
-		{
-			"type": "section",
-			"text": {
-				"type": "mrkdwn",
-				"text": "<{$streamer->getFeedUrl()}|*{$streamer->getName()}*> launched :crosshair: *{$onlineStream->game_name}*."
-			}
-		}
-	]
-}
-REQUEST;
-
-			$jsonRequestObj = json_decode($jsonRequest);
+			$jsonRequestObj = Template\ChangeGame::get($streamer, new Twitch\OnlineStream($onlineStream));
 
 			if (empty($jsonRequestObj)) {
 				Logger::write("Failed to build a valid JSON message for Slack for {$onlineStream->user_name}. Skipping ..");

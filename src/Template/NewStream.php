@@ -1,4 +1,5 @@
 <?php
+
 namespace Template;
 
 class NewStream
@@ -13,8 +14,7 @@ class NewStream
 		\Twitch\OnlineStream $onlineStream,
 		/** Extended profile data */
 		\Twitch\UserProfile|null $userProfile
-	): object
-	{
+	): object {
 		$imageUrl = str_replace(["{width}", "{height}"], ["1280", "720"], $onlineStream->thumbnail_url);
 		$title = str_replace(['"'], ["'"], $onlineStream->title);
 		$gameLabel = !empty($onlineStream->game_name) ? " *{$onlineStream->game_name}*." : "";
