@@ -1,4 +1,5 @@
 <?php
+
 use Utils\Logger;
 use Model\Streamer;
 
@@ -6,20 +7,20 @@ use Model\Streamer;
 include(dirname(dirname(__DIR__)) . "/src/bootstrap.php");
 
 $requiredConfigKeys = [
-    "twitchClientId",
-    "twitchClientSecret",
+	"twitchClientId",
+	"twitchClientSecret",
 	"streamers"
 ];
 
 // are we missing any configs?
 if (!$config->hasKeys($requiredConfigKeys)) {
-    Logger::write("Config must contain: " . implode(" | ", $requiredConfigKeys) . "\nExiting..");
-    exit(2);
+	Logger::write("Config must contain: " . implode(" | ", $requiredConfigKeys) . "\nExiting..");
+	exit(2);
 }
 
 if (empty($config->get("streamers"))) {
-    Logger::write("Not configured to pull any streamers. Exiting..");
-    exit(0);
+	Logger::write("Not configured to pull any streamers. Exiting..");
+	exit(0);
 }
 
 $clientId = $config->get("twitchClientId");
@@ -44,7 +45,7 @@ $userListResponse = json_decode($userListRequest->getBody()->getContents());
 
 if (empty($userListResponse) || empty($userListResponse->data)) {
 	Logger::write("Profile response empty. Exiting.");
-    exit(0);
+	exit(0);
 }
 
 $updatedUsers = [];
@@ -59,4 +60,4 @@ foreach ($userListResponse->data as $userProfile) {
 	$updatedUsers[] = $userProfile->login;
 }
 
-Logger::write("Updating " . count($updatedUsers) . " user profiles: " . implode(", " ,$updatedUsers));
+Logger::write("Updating " . count($updatedUsers) . " user profiles: " . implode(", ", $updatedUsers));
