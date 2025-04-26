@@ -1,6 +1,6 @@
 # Twitch-to-Slack notification bot
 
-This app monitors Twitch for streamers you want to subscribe to. When any of these streamers go live, or changes game during a stream, a notification will be posted to Slack.
+This app monitors Twitch for streamers who's stream you want to subscribe to. When any of these streamers go live, or changes game during a stream, a notification will be posted to a Slack organization and channel of your choosing.
 
 ## Requirements
 
@@ -14,15 +14,14 @@ Modify the `config.json` file (copy `config.sample.json` to create it the first 
 
 If you have any troubles formatting the file, you can use [an online tool](https://jsonformatter.curiousconcept.com/) to ensure your JSON format is valid
 
-
 ### Twitch API credentials (required)
 
 Provides API access to Twitch which holds the stream & streamer information
 
 ```json
 {
-    "twitchClientId": "string",
-    "twitchClientSecret": "string",
+	"twitchClientId": "string",
+	"twitchClientSecret": "string"
 }
 ```
 
@@ -34,7 +33,7 @@ Sets the destination for the Twitch annoucement posts. Controls the Slack organi
 
 ```json
 {
-    "slackWebhookUrl": "https://hooks.slack.com/services/ ..."
+	"slackWebhookUrl": "https://hooks.slack.com/services/ ..."
 }
 ```
 
@@ -44,11 +43,39 @@ Lists of streamers you are subscribing to
 
 ```json
 {
-    "streamers": [
+	"streamers": ["FaZeBlaze", "Swagg", "cloakzy", "NICKMERCS"]
+}
+```
+
+#### Advanced Streamer List (optional)
+
+Each of the streamers can be expressed in a more advanced structure which permits additional configuration:
+
+```json
+{
+	"username": "TwitchHandle",
+	"name": "CustomNameForSlackAnnouncement",
+	"slackUserId": "UXXXXXXXXX"
+}
+```
+
+-   `username`: The Twitch stream handle, same value you'd normally have in the plain array in the simple example above.
+-   `name`: Change the name of the streamer when announcing on Slack.
+-   `slackUserId`: If set, the Slack announcement will @mention the user within the post. Useful when the steamer is part of the Slack org and wishes to be notified of replies to the announcement.
+
+You may mix both configuration formats:
+
+```json
+{
+	"streamers": [
 		"FaZeBlaze",
 		"Swagg",
 		"cloakzy",
-		"NICKMERCS"
+		{
+			"username": "MyBuddyTom",
+			"name": "Tommy D",
+			"slackUserId": "U12345678"
+		}
 	]
 }
 ```
