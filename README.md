@@ -31,6 +31,8 @@ Set these according to a Twitch App you create via their [Developer portal](http
 
 Sets the destination for the Twitch annoucement posts. Controls the Slack organization, and channel.
 
+Follow Slack's steps to obtain a unique URL for your Slack organization: https://api.slack.com/messaging/webhooks
+
 ```json
 {
 	"slackWebhookUrl": "https://hooks.slack.com/services/ ..."
