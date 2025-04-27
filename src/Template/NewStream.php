@@ -13,7 +13,7 @@ class NewStream
 		/** Game launched */
 		\Twitch\OnlineStream $onlineStream,
 		/** Extended profile data */
-		\Twitch\UserProfile|null $userProfile
+		\Twitch\UserProfile $userProfile
 	): object {
 		$imageUrl = str_replace(["{width}", "{height}"], ["1280", "720"], $onlineStream->thumbnail_url);
 		$title = str_replace(['"'], ["'"], $onlineStream->title);
